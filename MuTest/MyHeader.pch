@@ -1,0 +1,27 @@
+//
+//  PrefixHeader.pch
+//  MuTest
+//
+//  Created by hs on 2017/7/13.
+//  Copyright © 2017年 Trich. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#import "Masonry.h"
+#import "UIView+MUViewAddition.h"
+
+#define ScreenSize [UIScreen mainScreen].bounds.size
+#define ScreenWidth ScreenSize.width
+#define ScreenHeight ScreenSize.height
+
+#define MUColor(r, g, b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1.0]
+#define MUColorRGBA(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:a]
+#define MUSeparatorLineColor   MUColor(200, 199, 204)
+#define MUFont(x) [UIFont systemFontOfSize:(x)]
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* PrefixHeader_pch */
