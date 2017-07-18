@@ -26,9 +26,7 @@
         self.showsHorizontalScrollIndicator = NO;
         self.font = [UIFont systemFontOfSize:14];
         self.userInteractionEnabled = YES;
-        
-        [self textContainer].lineBreakMode = NSLineBreakByCharWrapping;
-
+    
         self.rangeArray = [NSMutableArray array];
         //长按手势
         NSMutableArray *arr = [[NSMutableArray alloc]initWithArray:[self gestureRecognizers]];
@@ -268,16 +266,60 @@
         self.attributedText = s;
         // 储存列表的分隔符
         NSRange newR = NSMakeRange(range.location + 1, 4);
-        [_rangeArray addObject:[NSValue valueWithRange:newR]];
-        [_rangeArray sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-            if ([obj1 rangeValue].location > [obj2 rangeValue].location) {
-                return NSOrderedDescending;
+//        [_rangeArray addObject:[NSValue valueWithRange:newR]];
+        
+        _rangeArray = [self getRangeStr:self.attributedText.string findText:@"\n"];
+        
+        
+//        
+//        
+//        [_rangeArray sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+//            if ([obj1 rangeValue].location > [obj2 rangeValue].location) {
+//                return NSOrderedDescending;
+//            }else
+//            {
+//                return NSOrderedAscending;
+//            }
+//        }];
+    }
+}
+
+- (NSMutableArray *)getRangeStr:(NSString *)text findText:(NSString *)findText
+{
+    NSMutableArray *arrayRanges = [NSMutableArray arrayWithCapacity:20];
+    if (findText == nil && [findText isEqualToString:@""]) {
+        return nil;
+    }
+    NSRange rang = [text rangeOfString:findText];
+    if (rang.location != NSNotFound && rang.length != 0) {
+        //        [arrayRanges addObject:[NSNumber numberWithInteger:rang.location]];
+        [arrayRanges addObject:[NSValue valueWithRange:NSMakeRange(rang.location + 1, 4)]];
+        NSRange rang1 = {0,0};
+        NSInteger location = 0;
+        NSInteger length = 0;
+        for (int i = 0;; i++)
+        {
+            if (0 == i) {
+                location = rang.location + rang.length;
+                length = text.length - rang.location - rang.length;
+                rang1 = NSMakeRange(location, length);
             }else
             {
-                return NSOrderedAscending;
+                location = rang1.location + rang1.length;
+                length = text.length - rang1.location - rang1.length;
+                rang1 = NSMakeRange(location, length);
             }
-        }];
+            rang1 = [text rangeOfString:findText options:NSCaseInsensitiveSearch range:rang1];
+            if (rang1.location == NSNotFound && rang1.length == 0) {
+                break;
+            }else{
+                //                [arrayRanges addObject:[NSNumber numberWithInteger:rang1.location]];
+                [arrayRanges addObject:[NSValue valueWithRange:NSMakeRange(rang1.location + 1, 4)]];
+            }
+        }
+        return arrayRanges;
     }
+    return nil;
 }
 
 - (void)deleteLastParagraph

@@ -78,6 +78,9 @@ NSRange lastRange;
     if (lastRange.length != 0 || lastRange.location != 0) {
         [(MyTextView *)textView insertParagraphHeader:lastRange];
         lastRange = NSMakeRange(0, 0);
+        
+        
+        
     }
     
     CGFloat fixW = textView.textContainerInset.left + textView.textContainerInset.right;
@@ -92,10 +95,9 @@ NSRange lastRange;
     [textView setNeedsDisplay];
 }
 
-
-
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    // 输入内容为删除键
     if (text.length == 0) {
         if (!textView.attributedText.length && !textView.text.length && textView.tag != 100) {
             [self removeTextView:(MyTextView *)textView];
@@ -114,14 +116,13 @@ NSRange lastRange;
     
     // 点击换行创建新的输入框
     if ([(MyTextView *)textView listState] == TextViewListStateNormal) {
+        NSLog(@"%@",NSStringFromRange(textView.selectedRange));
         if ([text isEqualToString:@"\n"]) {
-            
             [self addTextView:(MyTextView *)textView];
-            
             return NO;
         }
     }else{
-        
+        // 列表状态下点击回车
         if (textView.selectedRange.location == [[[(MyTextView *)textView rangeArray] lastObject] rangeValue].location + [[[(MyTextView *)textView rangeArray] lastObject] rangeValue].length && [text isEqualToString:@"\n"]) {
             [(MyTextView *)textView deleteLastParagraph];
 //            [self caculateTextHeight:textView];
@@ -129,7 +130,6 @@ NSRange lastRange;
             
             return NO;
         }
-        
 //        if ([text isEqualToString:@"\n"] && [lastStr isEqualToString:@"\n"]) {
 //            
 //            [(MyTextView *)textView deleteLastParagraph];
@@ -166,7 +166,7 @@ NSRange lastRange;
 - (void)addTextView:(MyTextView *)textView
 {
     MyTextView *newT = [[MyTextView alloc] init];
-    
+    NSAttributedString *newS = [textView.attributedText attributedSubstringFromRange:NSMakeRange(textView.selectedRange.location, textView.attributedText.length - textView.selectedRange.location)];
     [self.scroll addSubview:newT];
     newT.delegateF = self;
     newT.tag = textView.tag + 1;
@@ -174,6 +174,12 @@ NSRange lastRange;
     newT.frame = CGRectMake(20, 0, ScreenWidth - 40, 40);
     newT.delegate = self;
     [newT becomeFirstResponder];
+    // 截取光标后面的字符串, 给到新的textView
+    if (newS.length) {
+        textView.attributedText = [textView.attributedText attributedSubstringFromRange:NSMakeRange(0, textView.selectedRange.location)];
+        newT.attributedText = newS;
+        [self caculateTextHeight:newT];
+    }
     [self layoutTextView];
     
 }
@@ -214,19 +220,6 @@ NSRange lastRange;
 //    }
     // 向上拖动
     if (toIndex < fromtag-100 && toIndex >= 0) {
-        NSInteger beginIndex = fromtag-100;
-        MyTextView *toView = _objList[toIndex];
-//        myV.center = toView.center;
-//        rects = toView.center;
-//        for (NSInteger j = beginIndex; j > toIndex; j--) {
-//            MyTextView *singView1 = self.objList[j];
-//            MyTextView *singView2 = self.objList[j-1];
-//
-//            [UIView animateWithDuration:0.5 animations:^{
-//                singView2.center = singView1.center;
-//                [self layoutTextView];
-//            }];
-//        }
         // 处理数组
         [_objList removeObject:myV];
         [_objList insertObject:myV atIndex:toIndex];
@@ -237,20 +230,6 @@ NSRange lastRange;
     }
     // 向下拖动
     if (toIndex >= fromtag-100 && toIndex < _objList.count) {
-        NSInteger beginIndex = fromtag-100;
-        MyTextView *toView = self.objList[toIndex];
-//        myV.center = toView.center;
-//        rects = toView.center;
-//        for (NSInteger j = beginIndex; j < toIndex; j++) {
-//            MyTextView *singView1 = self.objList[j];
-//            MyTextView *singView2 = self.objList[j+1];
-//            [_objList removeObject:myV];
-//            [_objList insertObject:myV atIndex:toIndex];
-//            [UIView animateWithDuration:0.25 animations:^{
-////                singView2.center = singView1.center;
-//                [self layoutTextView];
-//            }];
-//        }
         // 处理数组
         [_objList removeObject:myV];
         [_objList insertObject:myV atIndex:toIndex];
@@ -258,10 +237,7 @@ NSRange lastRange;
 //            singView2.center = singView1.center;
             [self changeTextViewFrame:myV];
         }];
-        
-        
     }
-    
 }
 
 - (NSInteger)indexOfPoint:(CGPoint)point
@@ -278,18 +254,6 @@ NSRange lastRange;
             }
         }
     }
-    return -100;
-//    for (NSInteger i = 0;i< singArray.count;i++)
-//    {
-//        UIView *singVi = singArray[i];
-//        if (singVi != view)
-//        {
-//            if (CGRectContainsPoint(singVi.frame, point))
-//            {
-//                return i;
-//            }
-//        }
-//    }
     return -100;
 }
 
