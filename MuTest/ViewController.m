@@ -63,14 +63,18 @@
 // 加粗的位置坐标
 NSInteger _loc;
 NSInteger _len;
-NSString *lastStr;
 NSRange lastRange;
 
 #pragma mark - TextViewDelegate
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
+    NSLog(@"%@-----%@", NSStringFromRange(textView.selectedRange), textView.selectedTextRange);
     _loc = textView.selectedRange.location;
     _len = textView.selectedRange.length;
+    if (textView.selectedRange.location < 10) {
+        CGFloat leng = textView.selectedRange.length;
+        textView.selectedRange = NSMakeRange(10, leng);
+    }
 }
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -78,8 +82,6 @@ NSRange lastRange;
     if (lastRange.length != 0 || lastRange.location != 0) {
         [(MyTextView *)textView insertParagraphHeader:lastRange];
         lastRange = NSMakeRange(0, 0);
-        
-        
         
     }
     
@@ -97,6 +99,7 @@ NSRange lastRange;
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    
     // 输入内容为删除键
     if (text.length == 0) {
         if (!textView.attributedText.length && !textView.text.length && textView.tag != 100) {
@@ -140,12 +143,10 @@ NSRange lastRange;
 //        }
         if ([text isEqualToString:@"\n"]){
 //            [(MyTextView *)textView insertParagraphHeader:range];
-            lastStr = text;
             
             lastRange = range;
             return YES;
         }
-        lastStr = text;
     }
     
     return YES;
@@ -181,7 +182,6 @@ NSRange lastRange;
         [self caculateTextHeight:newT];
     }
     [self layoutTextView];
-    
 }
 
 - (void)removeTextView:(MyTextView *)textView
