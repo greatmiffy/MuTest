@@ -68,13 +68,13 @@ NSRange lastRange;
 #pragma mark - TextViewDelegate
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-    NSLog(@"%@-----%@", NSStringFromRange(textView.selectedRange), textView.selectedTextRange);
+//    NSLog(@"%@-----%@", NSStringFromRange(textView.selectedRange), textView.selectedTextRange);
     _loc = textView.selectedRange.location;
     _len = textView.selectedRange.length;
-    if (textView.selectedRange.location < 10) {
-        CGFloat leng = textView.selectedRange.length;
-        textView.selectedRange = NSMakeRange(10, leng);
-    }
+//    if (textView.selectedRange.location < 10) {
+//        CGFloat leng = textView.selectedRange.length;
+//        textView.selectedRange = NSMakeRange(10, leng);
+//    }
 }
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -99,7 +99,6 @@ NSRange lastRange;
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    
     // 输入内容为删除键
     if (text.length == 0) {
         if (!textView.attributedText.length && !textView.text.length && textView.tag != 100) {
@@ -262,7 +261,11 @@ NSRange lastRange;
     NSLog(@"begin");
     MyTextView *myV = _objList[tag - 100];
     [self.scroll bringSubviewToFront:myV];
-    myV.transform = CGAffineTransformMakeScale(1.1, 1.1);
+    
+    [UIView animateWithDuration:0.25f animations:^{
+        myV.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.5];
+        myV.transform = CGAffineTransformMakeScale(1.1, 1.1);
+    }];
 }
 
 
@@ -272,6 +275,7 @@ NSRange lastRange;
     NSLog(@"end");
     MyTextView *myV = _objList[tag - 100];
     myV.transform = CGAffineTransformIdentity;
+    myV.backgroundColor = [UIColor whiteColor];
     [UIView animateWithDuration:.25f animations:^{
         [self layoutTextView];
     }];

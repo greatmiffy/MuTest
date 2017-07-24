@@ -236,6 +236,11 @@
 
 - (void)list
 {
+    
+    
+    
+    
+    
     NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineBreakMode = NSLineBreakByCharWrapping;
@@ -245,7 +250,7 @@
             [s deleteCharactersInRange:NSMakeRange(0, 4)];
         }
     }else{
-        style.headIndent = 30;
+        style.headIndent = 17;
         NSAttributedString *str = [[NSAttributedString alloc] initWithString:@" ·  " attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]}];
         [s insertAttributedString:str atIndex:0];
         [s addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, s.length)];
@@ -264,29 +269,20 @@
         NSAttributedString *str = [[NSAttributedString alloc] initWithString:@" ·  " attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]}];
         [s insertAttributedString:str atIndex:range.location + 1];
         self.attributedText = s;
+        self.selectedRange = NSMakeRange(range.location + range.length + 5, 0);
         // 储存列表的分隔符
         NSRange newR = NSMakeRange(range.location + 1, 4);
 //        [_rangeArray addObject:[NSValue valueWithRange:newR]];
         
         _rangeArray = [self getRangeStr:self.attributedText.string findText:@"\n"];
         
-        
-//        
-//        
-//        [_rangeArray sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-//            if ([obj1 rangeValue].location > [obj2 rangeValue].location) {
-//                return NSOrderedDescending;
-//            }else
-//            {
-//                return NSOrderedAscending;
-//            }
-//        }];
     }
 }
 
 - (NSMutableArray *)getRangeStr:(NSString *)text findText:(NSString *)findText
 {
-    NSMutableArray *arrayRanges = [NSMutableArray arrayWithCapacity:20];
+    // 找出text中所有findText的range,返回mutArray
+    NSMutableArray *arrayRanges = [NSMutableArray array];
     if (findText == nil && [findText isEqualToString:@""]) {
         return nil;
     }
@@ -321,6 +317,19 @@
     }
     return nil;
 }
+
+
+- (void)changeListHeadWith:(NSString *)text
+{
+    // 将无序列表变成有序列表
+    NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
+    for (int i = 0; i < _rangeArray.count; i++) {
+        NSRange tempRange = [_rangeArray[i] rangeValue];
+        [s.mutableString replaceCharactersInRange:tempRange withString:[NSString stringWithFormat:@" %zd  ", i]];
+    }
+    self.attributedText = s;
+}
+
 
 - (void)deleteLastParagraph
 {
