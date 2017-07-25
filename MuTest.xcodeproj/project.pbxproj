@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		455C92DA1F272774002EEECF /* MyPicView.m in Sources */ = {isa = PBXBuildFile; fileRef = 455C92D91F272774002EEECF /* MyPicView.m */; };
 		45D293941F1753C300298495 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D293931F1753C300298495 /* main.m */; };
 		45D293971F1753C300298495 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D293961F1753C300298495 /* AppDelegate.m */; };
 		45D2939A1F1753C300298495 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D293991F1753C300298495 /* ViewController.m */; };
@@ -29,6 +30,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		455C92D81F272774002EEECF /* MyPicView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPicView.h; sourceTree = "<group>"; };
+		455C92D91F272774002EEECF /* MyPicView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyPicView.m; sourceTree = "<group>"; };
 		45D2938F1F1753C300298495 /* MuTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MuTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45D293931F1753C300298495 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		45D293951F1753C300298495 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -114,6 +117,8 @@
 				45D293D51F17596100298495 /* BottomBar.m */,
 				45D293AA1F17561B00298495 /* MyTextView.h */,
 				45D293AB1F17561B00298495 /* MyTextView.m */,
+				455C92D81F272774002EEECF /* MyPicView.h */,
+				455C92D91F272774002EEECF /* MyPicView.m */,
 				45D293A91F17560100298495 /* MyHeader.pch */,
 				45D2939B1F1753C300298495 /* Main.storyboard */,
 				45D2939E1F1753C300298495 /* Assets.xcassets */,
@@ -246,6 +251,7 @@
 				45D293CD1F1756F900298495 /* NSArray+MASAdditions.m in Sources */,
 				45D293CC1F1756F900298495 /* MASViewConstraint.m in Sources */,
 				45D293CB1F1756F800298495 /* MASViewAttribute.m in Sources */,
+				455C92DA1F272774002EEECF /* MyPicView.m in Sources */,
 				45D293CF1F1756F900298495 /* View+MASAdditions.m in Sources */,
 				45D293971F1753C300298495 /* AppDelegate.m in Sources */,
 				45D293941F1753C300298495 /* main.m in Sources */,
@@ -411,6 +417,7 @@
 				45D293A81F1753C300298495 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

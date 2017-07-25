@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef  void(^BottomBarBlock)(NSInteger index, BOOL selected);
+typedef  void(^BottomBarBlock)(NSInteger index, NSInteger state);
 
 @interface BottomBar : UIView
 

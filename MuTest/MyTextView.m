@@ -40,15 +40,13 @@
         self.quoteBar = [[UIView alloc] init];
         [self addSubview:_quoteBar];
         _quoteBar.hidden = YES;
-        _quoteBar.backgroundColor = [UIColor grayColor];
+        _quoteBar.backgroundColor = [UIColor lightGrayColor];
         [_quoteBar mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(_quoteBar.superview).with.offset(5);
             make.height.mas_equalTo(_quoteBar.superview.height - 10);
             make.leading.equalTo(self);
             make.width.mas_equalTo(8);
         }];
-
-        
         UILongPressGestureRecognizer *longGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(viewLongPressGesture:)];
         [self addGestureRecognizer:longGesture];
         
@@ -131,9 +129,12 @@
         }
     }
 
-    [self.layer addSublayer:border];
-
-    NSLog(@"%@", NSStringFromCGRect(border.frame));
+    NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
+    // 在非响应且有文字时, 不添加虚线边框
+    if (!s.length || [self isFirstResponder]) {
+        [self.layer addSublayer:border];
+    }
+    
 }
 
 #pragma 长按手势
@@ -178,7 +179,6 @@
 {
     if (![self isFirstResponder]) {
         if ([gestureRecognizer isKindOfClass:NSClassFromString(@"UITextTapRecognizer")]) {
-            NSLog(@"tap");
             // 移除虚线边框(条件是输入了内容之后)
             NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
             if (s.length) {
@@ -236,11 +236,7 @@
 
 - (void)list
 {
-    
-    
-    
-    
-    
+
     NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineBreakMode = NSLineBreakByCharWrapping;
@@ -249,15 +245,30 @@
         if (_rangeArray.count) {
             [s deleteCharactersInRange:NSMakeRange(0, 4)];
         }
-    }else{
+        self.attributedText = s;
+    }else if (self.listState == TextViewListStateUnorder){
         style.headIndent = 17;
         NSAttributedString *str = [[NSAttributedString alloc] initWithString:@" ·  " attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]}];
         [s insertAttributedString:str atIndex:0];
         [s addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, s.length)];
         // 储存列表的分隔符
         [_rangeArray addObject:[NSValue valueWithRange:NSMakeRange(0, 4)]];
+        self.attributedText = s;
+    }else
+    {
+//        [s removeAttribute:NSParagraphStyleAttributeName range:NSMakeRange(0, s.length)];
+//        if (_rangeArray.count) {
+//            [s deleteCharactersInRange:NSMakeRange(0, 4)];
+//        }
+//        style.headIndent = 17;
+//        NSAttributedString *str = [[NSAttributedString alloc] initWithString:@" 1. " attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]}];
+//        [s insertAttributedString:str atIndex:0];
+//        [s addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, s.length)];
+
+        _rangeArray = [self getRangeStr:self.attributedText.string findText:@"\n"];
+        [self changeListHeadWith:@""];
     }
-    self.attributedText = s;
+//    self.attributedText = s;
     
 }
 
@@ -273,10 +284,34 @@
         // 储存列表的分隔符
         NSRange newR = NSMakeRange(range.location + 1, 4);
 //        [_rangeArray addObject:[NSValue valueWithRange:newR]];
+        _rangeArray = [self getRangeStr:self.attributedText.string findText:@"\n"];
+    }
+    if (self.listState == TextViewListStateOrder) {
+        NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
+        
+        NSAttributedString *str = [[NSAttributedString alloc] initWithString:@" ·  " attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15]}];
+        [s insertAttributedString:str atIndex:range.location + 1];
+        self.attributedText = s;
+        self.selectedRange = NSMakeRange(range.location + range.length + 5, 0);
+        // 储存列表的分隔符
+        NSRange newR = NSMakeRange(range.location + 1, 4);
+        //        [_rangeArray addObject:[NSValue valueWithRange:newR]];
         
         _rangeArray = [self getRangeStr:self.attributedText.string findText:@"\n"];
-        
+        [self changeListHeadWith:@""];
+        self.selectedRange = NSMakeRange(range.location + range.length + 5, 0);
     }
+}
+
+- (NSInteger)getIndexWithCurrentRange:(NSRange)range
+{
+    for (int i = 0; i< _rangeArray.count; i++) {
+        NSRange cur = [_rangeArray[i] rangeValue];
+        if (range.location < cur.location) {
+            return i;
+        }
+    }
+    return _rangeArray.count;
 }
 
 - (NSMutableArray *)getRangeStr:(NSString *)text findText:(NSString *)findText
@@ -286,6 +321,9 @@
     if (findText == nil && [findText isEqualToString:@""]) {
         return nil;
     }
+    if (_rangeArray.count) {
+        [arrayRanges addObject:[NSValue valueWithRange:NSMakeRange(0, 4)]];
+    }
     NSRange rang = [text rangeOfString:findText];
     if (rang.location != NSNotFound && rang.length != 0) {
         //        [arrayRanges addObject:[NSNumber numberWithInteger:rang.location]];
@@ -293,7 +331,7 @@
         NSRange rang1 = {0,0};
         NSInteger location = 0;
         NSInteger length = 0;
-        for (int i = 0;; i++)
+        for (NSInteger i = 0;; i++)
         {
             if (0 == i) {
                 location = rang.location + rang.length;
@@ -309,13 +347,13 @@
             if (rang1.location == NSNotFound && rang1.length == 0) {
                 break;
             }else{
-                //                [arrayRanges addObject:[NSNumber numberWithInteger:rang1.location]];
+//                [arrayRanges addObject:[NSNumber numberWithInteger:rang1.location]];
                 [arrayRanges addObject:[NSValue valueWithRange:NSMakeRange(rang1.location + 1, 4)]];
             }
         }
         return arrayRanges;
     }
-    return nil;
+    return arrayRanges;
 }
 
 
@@ -325,7 +363,7 @@
     NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
     for (int i = 0; i < _rangeArray.count; i++) {
         NSRange tempRange = [_rangeArray[i] rangeValue];
-        [s.mutableString replaceCharactersInRange:tempRange withString:[NSString stringWithFormat:@" %zd  ", i]];
+        [s.mutableString replaceCharactersInRange:tempRange withString:i >= 9 ? [[NSString stringWithFormat:@" %zd. ", i + 1] substringToIndex:4]:[NSString stringWithFormat:@" %zd. ", i + 1]];
     }
     self.attributedText = s;
 }
@@ -333,12 +371,37 @@
 
 - (void)deleteLastParagraph
 {
-    if (self.listState == TextViewListStateUnorder) {
+    if (self.listState != TextViewListStateNormal) {
         NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
         
         [s deleteCharactersInRange:NSMakeRange(s.length - 5, 5)];
         self.attributedText = s;
         [_rangeArray removeLastObject];
+    }
+}
+
+- (void)selectRangeLimit:(NSRange)currentRange
+{
+    for (NSInteger i = 0; i < _rangeArray.count; i++) {
+        NSRange temp = [_rangeArray[i] rangeValue];
+        NSRange last;
+        if (i != 0) {
+            last = [_rangeArray[i-1] rangeValue];
+        }
+        if (temp.location > currentRange.location) {
+            
+        }
+    }
+}
+
+- (void)removeRangeFromArray:(NSValue *)v
+{
+    NSRange select = self.selectedRange;
+    [_rangeArray removeObject:v];
+    _rangeArray = [self getRangeStr:self.attributedText.string findText:@"\n"];
+    if (self.listState == TextViewListStateOrder) {
+        [self changeListHeadWith:@""];
+        self.selectedRange = select;
     }
 }
 
@@ -351,8 +414,6 @@
     }else
         [super addGestureRecognizer:gestureRecognizer];
 }
-
-
 
 /*
 // Only override drawRect: if you perform custom drawing.

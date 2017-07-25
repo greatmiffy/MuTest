@@ -36,15 +36,15 @@
     _scroll.contentSize = CGSizeMake(ScreenWidth, _scroll.height);
     [self.view addSubview:_scroll];
     
-    self.bottomBar = [[BottomBar alloc] initWithFrame:CGRectMake(0, ScreenHeight - 30, ScreenWidth, 30)block:^(NSInteger index, BOOL selected) {
+    self.bottomBar = [[BottomBar alloc] initWithFrame:CGRectMake(0, ScreenHeight - 30, ScreenWidth, 30)block:^(NSInteger index, NSInteger state) {
         if (index == 1) {
             [self bolder];
         }
         if (index == 2) {
-            [self yinyong:selected];
+            [self yinyong:state];
         }
         if (index == 3) {
-            [self liebiao:selected];
+            [self liebiao:state];
         }
     }];
     [self.view addSubview:_bottomBar];
@@ -65,24 +65,32 @@ NSInteger _loc;
 NSInteger _len;
 NSRange lastRange;
 
+CGFloat currentLength;
 #pragma mark - TextViewDelegate
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-//    NSLog(@"%@-----%@", NSStringFromRange(textView.selectedRange), textView.selectedTextRange);
+    NSLog(@"%@-----%@", NSStringFromRange(textView.selectedRange), textView.selectedTextRange);
     _loc = textView.selectedRange.location;
     _len = textView.selectedRange.length;
-//    if (textView.selectedRange.location < 10) {
-//        CGFloat leng = textView.selectedRange.length;
-//        textView.selectedRange = NSMakeRange(10, leng);
-//    }
+    if (textView.selectedRange.location < 4) {
+        if (currentLength == 0) {
+            currentLength = textView.selectedRange.length;
+        }
+        
+        
+    }
+    
+    
 }
+
+
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+    // 输入回车后插入一个列表头
     if (lastRange.length != 0 || lastRange.location != 0) {
         [(MyTextView *)textView insertParagraphHeader:lastRange];
         lastRange = NSMakeRange(0, 0);
-        
     }
     
     CGFloat fixW = textView.textContainerInset.left + textView.textContainerInset.right;
@@ -108,9 +116,11 @@ NSRange lastRange;
             NSRange temp = [v rangeValue];
             if (NSLocationInRange(range.location, temp)) {
                 NSMutableAttributedString *s =[textView.attributedText mutableCopy];
-                [s deleteCharactersInRange:NSMakeRange(temp.location, temp.length - 1)];
+                [s deleteCharactersInRange:NSMakeRange(temp.location, temp.length)];
                 textView.attributedText = s;
-                [[(MyTextView *)textView rangeArray] removeObject:v];
+                // range.location - 4 + 1,因为删除键要删除一
+                textView.selectedRange = NSMakeRange(range.location - 4, 0);
+                [(MyTextView *)textView removeRangeFromArray:v];
                 return YES;
             }
         }
@@ -125,9 +135,11 @@ NSRange lastRange;
         }
     }else{
         // 列表状态下点击回车
+        
+        // 在段尾
         if (textView.selectedRange.location == [[[(MyTextView *)textView rangeArray] lastObject] rangeValue].location + [[[(MyTextView *)textView rangeArray] lastObject] rangeValue].length && [text isEqualToString:@"\n"]) {
             [(MyTextView *)textView deleteLastParagraph];
-//            [self caculateTextHeight:textView];
+            [self caculateTextHeight:textView];
             [self addTextView:(MyTextView *)textView];
             
             return NO;
@@ -140,6 +152,7 @@ NSRange lastRange;
 //            
 //            return NO;
 //        }
+        // 在段中
         if ([text isEqualToString:@"\n"]){
 //            [(MyTextView *)textView insertParagraphHeader:range];
             
@@ -286,6 +299,7 @@ NSRange lastRange;
 
 - (void)layoutTextView
 {
+    // 需要设置 x 坐标
     UIView *last;
     UIView *cur;
     for (int i = 0; i < _objList.count; i++) {
@@ -309,6 +323,7 @@ NSRange lastRange;
 
 - (void)changeTextViewFrame:(UIView *)currentView
 {
+    // 不需要设置x坐标, 只需修正y坐标
     UIView *last;
     UIView *cur;
     for (int i = 0; i < _objList.count; i++) {
@@ -362,17 +377,34 @@ NSRange lastRange;
 }
 
 
-- (void)liebiao:(BOOL)selected
+- (void)liebiao:(NSInteger)state
 {
-    if (!_currentView.listState == TextViewListStateNormal) {
+    if (state == TextViewListStateNormal) {
+        
         _currentView.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
         _currentView.listState = TextViewListStateNormal;
-    }else
+    }else if (state == TextViewListStateUnorder)
     {
         _currentView.textContainerInset = UIEdgeInsetsMake(8, 5, 8, 5);
         _currentView.listState = TextViewListStateUnorder;
+    }else{
+        _currentView.textContainerInset = UIEdgeInsetsMake(8, 5, 8, 5);
+        _currentView.listState = TextViewListStateOrder;
+
     }
     [_currentView list];
+    
+    
+    
+//    if (!_currentView.listState == TextViewListStateNormal) {
+//        _currentView.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
+//        _currentView.listState = TextViewListStateNormal;
+//    }else
+//    {
+//        _currentView.textContainerInset = UIEdgeInsetsMake(8, 5, 8, 5);
+//        _currentView.listState = TextViewListStateUnorder;
+//    }
+    
 }
 
 #pragma mark - 计算文字高度

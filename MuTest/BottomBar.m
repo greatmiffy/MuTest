@@ -41,6 +41,7 @@
         
         UIButton *liebiao = [[UIButton alloc] initWithFrame:CGRectMake(160, 10, 40, 20)];
         [self addSubview:liebiao];
+        liebiao.tag = 33;
         [liebiao setTitle:@"list" forState:UIControlStateNormal];
         [liebiao setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [liebiao addTarget:self action:@selector(liebiaoClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -103,8 +104,13 @@
 
 - (void)liebiaoClick:(UIButton *)btn
 {
-    btn.selected = !btn.selected;
-    self.bottomBlock(3, btn.selected);
+    if (btn.tag != 35) {
+        btn.tag += 1;
+    }else
+    {
+        btn.tag = 33;
+    }
+    self.bottomBlock(3, btn.tag - 33);
 }
 
 - (void)downClick:(UIButton *)btn

@@ -37,4 +37,6 @@ typedef NS_ENUM (NSInteger,TextViewListState){
 
 @property (nonatomic, strong) NSMutableArray *rangeArray;
 
+- (void)removeRangeFromArray:(NSValue *)v;
+
 @end
