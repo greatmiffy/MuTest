@@ -7,6 +7,9 @@
 //
 
 #import "MyTextView.h"
+#import <objc/runtime.h>
+#import <objc/objc-runtime.h>
+#import <CoreText/CoreText.h>
 
 @interface MyTextView ()
 
@@ -365,6 +368,7 @@
         NSRange tempRange = [_rangeArray[i] rangeValue];
         [s.mutableString replaceCharactersInRange:tempRange withString:i >= 9 ? [[NSString stringWithFormat:@" %zd. ", i + 1] substringToIndex:4]:[NSString stringWithFormat:@" %zd. ", i + 1]];
     }
+    
     self.attributedText = s;
 }
 
@@ -380,19 +384,21 @@
     }
 }
 
-- (void)selectRangeLimit:(NSRange)currentRange
+- (NSRange)selectRangeLimit:(NSRange)currentRange
 {
-    for (NSInteger i = 0; i < _rangeArray.count; i++) {
+    for (NSInteger i = 0; i < _rangeArray.count - 1; i++) {
         NSRange temp = [_rangeArray[i] rangeValue];
-        NSRange last;
-        if (i != 0) {
-            last = [_rangeArray[i-1] rangeValue];
-        }
-        if (temp.location > currentRange.location) {
-            
+        NSRange next = [_rangeArray[i+1] rangeValue];
+        
+        if (temp.location < currentRange.location && next.location > currentRange.location) {
+            return NSMakeRange(temp.location + temp.length, next.location - (temp.location + temp.length));
         }
     }
+    NSRange last =[_rangeArray.lastObject rangeValue];
+    
+    return NSMakeRange(last.location + last.length, self.attributedText.length - last.location - last.length);
 }
+
 
 - (void)removeRangeFromArray:(NSValue *)v
 {
@@ -406,6 +412,7 @@
 }
 
 
+
 - (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 {
     if (![self isFirstResponder] && [gestureRecognizer isKindOfClass:NSClassFromString(@"UIVariableDelayLoupeGesture")])
@@ -414,6 +421,48 @@
     }else
         [super addGestureRecognizer:gestureRecognizer];
 }
+
+- (void)boldWithSelectedRange:(NSRange)range
+{
+    NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
+    [s addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:15] range:range];
+    
+    NSMutableArray *nodes = self.nodeModel.nodes;
+    NSString *selectedString = [s.string substringWithRange:range];
+    
+//    id dic = [s valueForKey:@"mutableAttributes"];
+//    NSDictionary *muti = [dic performSelector:@selector(objectAtIndex:effectiveRange:) withObject:0 withObject:nil];
+//    UIFont *font = [muti objectForKey:@"NSFont"];
+    
+    NSRange all = NSMakeRange(0, s.length);
+    
+    NSMutableArray *textAttributes = [NSMutableArray array];
+    NSInteger index = 0;
+    while (index < s.length) {
+        [textAttributes addObject:[s attributesAtIndex:index effectiveRange:&all]];
+        UIFont *current = [[s attributesAtIndex:index effectiveRange:&all] objectForKey:@"NSFont"];
+        UIFontDescriptor *fontDescriptor = current.fontDescriptor;
+        UIFontDescriptorSymbolicTraits fontDescriptorSymbolicTraits = fontDescriptor.symbolicTraits;
+        BOOL isBold = (fontDescriptorSymbolicTraits & UIFontDescriptorTraitBold) != 0;
+        NSLog(@"%zd",isBold);
+        index += all.length;
+        
+    }
+    
+    self.attributedText = s;
+}
+
+- (void)italicWithSelectedRange:(NSRange)range
+{
+    NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
+    NSMutableArray *nodes = self.nodeModel.nodes;
+    NSString *selectedString = [s.string substringWithRange:range];
+    [s addAttribute:NSObliquenessAttributeName value:[NSNumber numberWithFloat:30] range:range];
+    self.attributedText = s;
+}
+
+
+
 
 /*
 // Only override drawRect: if you perform custom drawing.

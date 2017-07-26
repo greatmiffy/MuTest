@@ -37,6 +37,13 @@ typedef NS_ENUM (NSInteger,TextViewListState){
 
 @property (nonatomic, strong) NSMutableArray *rangeArray;
 
+@property (nonatomic,strong) NodeModel *nodeModel;
+
 - (void)removeRangeFromArray:(NSValue *)v;
+- (NSRange)selectRangeLimit:(NSRange)currentRange;
+
+
+- (void)boldWithSelectedRange:(NSRange)range;
+- (void)italicWithSelectedRange:(NSRange)range;
 
 @end

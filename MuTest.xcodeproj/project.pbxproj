@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		453D74741F283E3F00B0A715 /* SelectedBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D74731F283E3F00B0A715 /* SelectedBar.m */; };
+		453D74771F285C0F00B0A715 /* TextModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D74761F285C0F00B0A715 /* TextModel.m */; };
+		453D747A1F28607300B0A715 /* NodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D74791F28607300B0A715 /* NodeModel.m */; };
 		455C92DA1F272774002EEECF /* MyPicView.m in Sources */ = {isa = PBXBuildFile; fileRef = 455C92D91F272774002EEECF /* MyPicView.m */; };
 		45D293941F1753C300298495 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D293931F1753C300298495 /* main.m */; };
 		45D293971F1753C300298495 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D293961F1753C300298495 /* AppDelegate.m */; };
@@ -30,6 +33,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		453D74721F283E3F00B0A715 /* SelectedBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectedBar.h; sourceTree = "<group>"; };
+		453D74731F283E3F00B0A715 /* SelectedBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectedBar.m; sourceTree = "<group>"; };
+		453D74751F285C0F00B0A715 /* TextModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextModel.h; sourceTree = "<group>"; };
+		453D74761F285C0F00B0A715 /* TextModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextModel.m; sourceTree = "<group>"; };
+		453D74781F28607300B0A715 /* NodeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeModel.h; sourceTree = "<group>"; };
+		453D74791F28607300B0A715 /* NodeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeModel.m; sourceTree = "<group>"; };
 		455C92D81F272774002EEECF /* MyPicView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPicView.h; sourceTree = "<group>"; };
 		455C92D91F272774002EEECF /* MyPicView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyPicView.m; sourceTree = "<group>"; };
 		45D2938F1F1753C300298495 /* MuTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MuTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,10 +124,16 @@
 				45D293991F1753C300298495 /* ViewController.m */,
 				45D293D41F17596100298495 /* BottomBar.h */,
 				45D293D51F17596100298495 /* BottomBar.m */,
+				453D74721F283E3F00B0A715 /* SelectedBar.h */,
+				453D74731F283E3F00B0A715 /* SelectedBar.m */,
 				45D293AA1F17561B00298495 /* MyTextView.h */,
 				45D293AB1F17561B00298495 /* MyTextView.m */,
 				455C92D81F272774002EEECF /* MyPicView.h */,
 				455C92D91F272774002EEECF /* MyPicView.m */,
+				453D74751F285C0F00B0A715 /* TextModel.h */,
+				453D74761F285C0F00B0A715 /* TextModel.m */,
+				453D74781F28607300B0A715 /* NodeModel.h */,
+				453D74791F28607300B0A715 /* NodeModel.m */,
 				45D293A91F17560100298495 /* MyHeader.pch */,
 				45D2939B1F1753C300298495 /* Main.storyboard */,
 				45D2939E1F1753C300298495 /* Assets.xcassets */,
@@ -249,11 +264,14 @@
 				45D293CA1F1756F800298495 /* MASLayoutConstraint.m in Sources */,
 				45D293D31F17571200298495 /* UIView+MUViewAddition.m in Sources */,
 				45D293CD1F1756F900298495 /* NSArray+MASAdditions.m in Sources */,
+				453D747A1F28607300B0A715 /* NodeModel.m in Sources */,
 				45D293CC1F1756F900298495 /* MASViewConstraint.m in Sources */,
 				45D293CB1F1756F800298495 /* MASViewAttribute.m in Sources */,
 				455C92DA1F272774002EEECF /* MyPicView.m in Sources */,
 				45D293CF1F1756F900298495 /* View+MASAdditions.m in Sources */,
 				45D293971F1753C300298495 /* AppDelegate.m in Sources */,
+				453D74741F283E3F00B0A715 /* SelectedBar.m in Sources */,
+				453D74771F285C0F00B0A715 /* TextModel.m in Sources */,
 				45D293941F1753C300298495 /* main.m in Sources */,
 				45D293C71F1756F800298495 /* MASCompositeConstraint.m in Sources */,
 				45D293CE1F1756F900298495 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,

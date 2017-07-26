@@ -11,6 +11,7 @@
 #import "MyTextView.h"
 #import "BottomBar.h"
 #import <CoreText/CoreText.h>
+#import "SelectedBar.h"
 
 
 @interface ViewController ()<UITextViewDelegate, MyTextViewDelegate>
@@ -20,8 +21,11 @@
 @property (nonatomic, strong) NSMutableArray *objList;
 @property (nonatomic, strong) MyTextView *currentView;
 @property (nonatomic, strong) BottomBar *bottomBar;
+@property (nonatomic, strong) SelectedBar *selectedBar;
 
 @property (nonatomic, assign) CGPoint rects;
+
+@property (nonatomic, assign) BOOL isDelete;
 
 @end
 
@@ -49,6 +53,20 @@
     }];
     [self.view addSubview:_bottomBar];
     
+    self.selectedBar = [[SelectedBar alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, 30) callBack:^(NSInteger index, NSInteger state) {
+        if (index == 0) {
+            [self bold];
+        }
+        if (index == 1) {
+            [self xieti:state];
+        }
+        if (index == 2) {
+            [self link:state];
+        }
+    }];
+    [self.view addSubview:_selectedBar];
+    _selectedBar.hidden = YES;
+    
     self.contentTextView = [[MyTextView alloc] initWithFrame:CGRectMake(20, 20, ScreenWidth - 40, 40)];
     _contentTextView.delegate = self;
     _contentTextView.delegateF = self;
@@ -60,11 +78,39 @@
     
 }
 
+- (void)changeToBottomBar
+{
+    if (!_bottomBar.hidden) {
+        return;
+    }
+    _bottomBar.y = _selectedBar.bottom;
+    _bottomBar.hidden = NO;
+    [self.view bringSubviewToFront:_bottomBar];
+    [UIView animateWithDuration:0.25f animations:^{
+        _bottomBar.y = _selectedBar.y;
+    } completion:^(BOOL finished) {
+        _selectedBar.hidden = YES;
+    }];
+}
+- (void)changeToSelectBar
+{
+    if (!_selectedBar.hidden) {
+        return;
+    }
+    self.selectedBar.y = _bottomBar.bottom;
+    _selectedBar.hidden = NO;
+    [self.view bringSubviewToFront:_selectedBar];
+    [UIView animateWithDuration:0.25f animations:^{
+        self.selectedBar.y = _bottomBar.y;
+    } completion:^(BOOL finished) {
+        _bottomBar.hidden = YES;
+    }];
+}
+
 // 加粗的位置坐标
 NSInteger _loc;
 NSInteger _len;
 NSRange lastRange;
-
 CGFloat currentLength;
 #pragma mark - TextViewDelegate
 - (void)textViewDidChangeSelection:(UITextView *)textView
@@ -72,14 +118,34 @@ CGFloat currentLength;
     NSLog(@"%@-----%@", NSStringFromRange(textView.selectedRange), textView.selectedTextRange);
     _loc = textView.selectedRange.location;
     _len = textView.selectedRange.length;
-    if (textView.selectedRange.location < 4) {
-        if (currentLength == 0) {
-            currentLength = textView.selectedRange.length;
-        }
-        
-        
+//    if (textView.selectedRange.location < 4) {
+//        if (currentLength == 0) {
+//            currentLength = textView.selectedRange.length;
+//        }
+//        
+//        
+//    }
+    if (_len == 0 && textView.attributedText.length) {
+        [self changeToBottomBar];
     }
-    
+    if (_len > 0)
+    {
+        [self changeToSelectBar];
+    }
+    if ([(MyTextView *)textView listState] == TextViewListStateNormal) {
+        return;
+    }
+    if (_isDelete == YES) {
+        _isDelete = NO;
+        return;
+    }
+    NSRange limit = [(MyTextView *)textView selectRangeLimit:textView.selectedRange];
+    if (textView.selectedRange.location < limit.location) {
+        textView.selectedRange = NSMakeRange(limit.location, textView.selectedRange.length);
+    }
+    if (textView.selectedRange.location + textView.selectedRange.length > limit.location + limit.length) {
+        textView.selectedRange = NSMakeRange(textView.selectedRange.location, limit.length - textView.selectedRange.location);
+    }
     
 }
 
@@ -109,6 +175,7 @@ CGFloat currentLength;
 {
     // 输入内容为删除键
     if (text.length == 0) {
+        _isDelete = YES;
         if (!textView.attributedText.length && !textView.text.length && textView.tag != 100) {
             [self removeTextView:(MyTextView *)textView];
         }
@@ -118,7 +185,7 @@ CGFloat currentLength;
                 NSMutableAttributedString *s =[textView.attributedText mutableCopy];
                 [s deleteCharactersInRange:NSMakeRange(temp.location, temp.length)];
                 textView.attributedText = s;
-                // range.location - 4 + 1,因为删除键要删除一
+                // range.location - 4 + 1,因为删除键要删除一个
                 textView.selectedRange = NSMakeRange(range.location - 4, 0);
                 [(MyTextView *)textView removeRangeFromArray:v];
                 return YES;
@@ -417,6 +484,20 @@ CGFloat currentLength;
     textView.height = ceilf( rect.size.height + fixH) > 40 ? ceilf( rect.size.height + fixH) : 40;
     [self layoutTextView];
     [textView setNeedsDisplay];
+}
+
+- (void)bold
+{
+    [_currentView boldWithSelectedRange:_currentView.selectedRange];
+    [self caculateTextHeight:_currentView];
+}
+- (void)xieti:(NSInteger)state
+{
+    
+}
+- (void)link:(NSInteger)state
+{
+    
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
