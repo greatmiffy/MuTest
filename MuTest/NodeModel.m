@@ -9,5 +9,11 @@
 #import "NodeModel.h"
 
 @implementation NodeModel
-
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.nodes = [NSMutableArray array];
+    }
+    return self;
+}
 @end

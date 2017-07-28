@@ -13,6 +13,7 @@
 #import "UIView+MUViewAddition.h"
 #import "NodeModel.h"
 #import "TextModel.h"
+#import "AppDelegate.h"
 
 #define ScreenSize [UIScreen mainScreen].bounds.size
 #define ScreenWidth ScreenSize.width

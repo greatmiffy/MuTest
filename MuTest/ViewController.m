@@ -12,9 +12,12 @@
 #import "BottomBar.h"
 #import <CoreText/CoreText.h>
 #import "SelectedBar.h"
+#import <AVFoundation/AVFoundation.h>
+#import "MyPicView.h"
+#import "TZImagePickerController.h"
 
 
-@interface ViewController ()<UITextViewDelegate, MyTextViewDelegate>
+@interface ViewController ()<UITextViewDelegate, MyTextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, TZImagePickerControllerDelegate, MyPicViewDelegate>
 
 @property (nonatomic, strong) MyTextView *contentTextView;
 @property (nonatomic, strong) UIScrollView *scroll;
@@ -50,6 +53,9 @@
         if (index == 3) {
             [self liebiao:state];
         }
+        if (index == 0) {
+            [self image];
+        }
     }];
     [self.view addSubview:_bottomBar];
     
@@ -74,6 +80,8 @@
     _contentTextView.tag = 100;
     self.objList = [NSMutableArray array];
     [_objList addObject:_contentTextView];
+    
+    _currentView = self.contentTextView;
     
     
 }
@@ -263,6 +271,22 @@ CGFloat currentLength;
     [self layoutTextView];
 }
 
+- (void)addImageViewWithImage:(UIImage *)image
+{
+    
+    CGFloat height = image.size.height * (ScreenWidth - 40) / image.size.width;
+    
+    MyPicView *picView = [[MyPicView alloc] initWithFrame:CGRectMake(20, 0, ScreenWidth - 40, height)];
+    [picView setContentImage:image];
+    [self.scroll addSubview:picView];
+    picView.delegateF = self;
+    picView.delegate = self;
+    picView.tag = _currentView.tag + 1;
+    [_objList insertObject:picView atIndex:_currentView.tag - 99];
+    [self layoutTextView];
+
+}
+
 - (void)removeTextView:(MyTextView *)textView
 {
     [_objList removeObject:textView];
@@ -382,9 +406,12 @@ CGFloat currentLength;
         }
         last = cur;
     }
-    if (cur.bottom > _scroll.contentSize.height) {
+    if (cur.bottom > _scroll.height) {
         _scroll.contentSize = CGSizeMake(ScreenWidth, cur.bottom);
         _scroll.contentOffset = CGPointMake(0, cur.bottom - _scroll.height);
+    }else
+    {
+        _scroll.contentSize = CGSizeMake(ScreenWidth, _scroll.height);
     }
 }
 
@@ -462,16 +489,6 @@ CGFloat currentLength;
     [_currentView list];
     
     
-    
-//    if (!_currentView.listState == TextViewListStateNormal) {
-//        _currentView.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
-//        _currentView.listState = TextViewListStateNormal;
-//    }else
-//    {
-//        _currentView.textContainerInset = UIEdgeInsetsMake(8, 5, 8, 5);
-//        _currentView.listState = TextViewListStateUnorder;
-//    }
-    
 }
 
 #pragma mark - 计算文字高度
@@ -493,7 +510,8 @@ CGFloat currentLength;
 }
 - (void)xieti:(NSInteger)state
 {
-    
+    [_currentView italicWithSelectedRange:_currentView.selectedRange];
+    [self caculateTextHeight:_currentView];
 }
 - (void)link:(NSInteger)state
 {
@@ -503,6 +521,160 @@ CGFloat currentLength;
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [self.scroll endEditing:YES];
+}
+
+- (void)image
+{
+    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:5 columnNumber:3 delegate:self];
+    imagePickerVc.naviBgColor = [UIColor whiteColor];
+    imagePickerVc.naviTitleColor = MUColor( 34, 36, 38);
+    imagePickerVc.isStatusBarDefault = YES;
+    imagePickerVc.barItemTextColor = MUColor(34, 36, 38);
+    imagePickerVc.sortAscendingByModificationDate = NO;
+    [self presentViewController:imagePickerVc animated:YES completion:nil];
+    
+    
+    
+//    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+//    [self presentViewController:imagePicker animated:YES completion:^{
+//        
+//    }];
+//    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+//    imagePicker.allowsEditing = NO;
+//    
+//    imagePicker.delegate = self;
+}
+
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
+{
+    for (UIImage *img in photos) {
+        [self addImageViewWithImage:[self compressImage1280:img]];
+    }
+    [picker dismissViewControllerAnimated:YES completion:^{
+    }];
+}
+
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto
+{
+    
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info
+{
+    NSLog(@"%@",info);
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    
+//    CGFloat height = image.size.height * (ScreenWidth - 40) / image.size.width;
+//    
+//    MyPicView *picView = [[MyPicView alloc] initWithFrame:CGRectMake(20, 0, ScreenWidth - 40, height)];
+//    [picView setContentImage:image];
+
+    [self addImageViewWithImage:[self compressImage1280:image]];
+    [picker dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
+
++ (void)checkCameraAvalibale:(void (^)(void))success
+                     failure:(void (^)(void))failure
+{
+    AVAuthorizationStatus authorizationStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    switch (authorizationStatus) {
+        case AVAuthorizationStatusNotDetermined: {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler: ^(BOOL granted) {
+                if (granted) {
+                    if (success)
+                        success();
+                }
+                else {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"allow_use_webcam" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil,nil];
+                    alertView.delegate = self;
+                    [alertView show];
+                    if (failure)
+                        failure();
+                }
+            }];
+            break;
+        }
+            
+        case AVAuthorizationStatusAuthorized: {
+            if (success)
+                success();
+            break;
+        }
+            
+        case AVAuthorizationStatusRestricted:
+        case AVAuthorizationStatusDenied: {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"allow_use_webcam" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil,nil];
+            alertView.delegate = self;
+            [alertView show];
+            if (failure)
+                failure();
+            break;
+        }
+            
+        default: {
+            if (success)
+                success();
+            break;
+        }
+            
+    }
+}
+
+#pragma mark - MyPicViewDelegate
+- (void)didTapView:(MyPicView *)view
+{
+    [self.view endEditing:YES];
+    for (UIView *v in _objList) {
+        if ([v isKindOfClass:[MyPicView class]]) {
+            if (![v isEqual:view]) {
+                [(MyPicView *)v setIsSelected:NO];
+                [(MyPicView *)v didTapView];
+            }
+        }
+    }
+}
+
+- (void)deletePicture:(MyPicView *)view
+{
+    [_objList removeObject:view];
+    [view removeFromSuperview];
+    [self layoutTextView];
+}
+
+- (UIImage*)compressImage1280:(UIImage*)oldimg
+{
+    if(!oldimg)
+        return nil;
+    
+    CGSize newsize = oldimg.size;
+    if(newsize.width && (newsize.width > 1280.0f))
+    {
+        CGFloat scale = 1280.0f / newsize.width;
+        newsize.width *= scale;
+        newsize.height *= scale;
+    }
+    else
+    {
+        return oldimg;
+    }
+    UIGraphicsBeginImageContext(newsize);
+    //UIGraphicsBeginImageContextWithOptions(newsize, NO, 0.0);
+    CGRect rect = CGRectMake(0, 0, newsize.width, newsize.height);
+    [oldimg drawInRect:rect];
+    UIImage *newimg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newimg;
 }
 
 - (void)didReceiveMemoryWarning {

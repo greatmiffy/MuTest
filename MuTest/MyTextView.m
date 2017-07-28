@@ -38,7 +38,7 @@
                 [self removeGestureRecognizer:ges];
             }
         }
-        
+        self.nodeModel = [[NodeModel alloc] init];
         // 引用的灰色条
         self.quoteBar = [[UIView alloc] init];
         [self addSubview:_quoteBar];
@@ -434,22 +434,10 @@
 //    NSDictionary *muti = [dic performSelector:@selector(objectAtIndex:effectiveRange:) withObject:0 withObject:nil];
 //    UIFont *font = [muti objectForKey:@"NSFont"];
     
-    NSRange all = NSMakeRange(0, s.length);
-    
-    NSMutableArray *textAttributes = [NSMutableArray array];
-    NSInteger index = 0;
-    while (index < s.length) {
-        [textAttributes addObject:[s attributesAtIndex:index effectiveRange:&all]];
-        UIFont *current = [[s attributesAtIndex:index effectiveRange:&all] objectForKey:@"NSFont"];
-        UIFontDescriptor *fontDescriptor = current.fontDescriptor;
-        UIFontDescriptorSymbolicTraits fontDescriptorSymbolicTraits = fontDescriptor.symbolicTraits;
-        BOOL isBold = (fontDescriptorSymbolicTraits & UIFontDescriptorTraitBold) != 0;
-        NSLog(@"%zd",isBold);
-        index += all.length;
-        
-    }
     
     self.attributedText = s;
+    
+    [self handelModel];
 }
 
 - (void)italicWithSelectedRange:(NSRange)range
@@ -457,11 +445,45 @@
     NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
     NSMutableArray *nodes = self.nodeModel.nodes;
     NSString *selectedString = [s.string substringWithRange:range];
-    [s addAttribute:NSObliquenessAttributeName value:[NSNumber numberWithFloat:30] range:range];
+    [s addAttribute:NSObliquenessAttributeName value:[NSNumber numberWithFloat:0.25f] range:range];
     self.attributedText = s;
+    
+    [self handelModel];
+    
 }
 
-
+- (void)handelModel
+{
+    // 遍历attribute, 生成model
+    NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
+    NSRange all = NSMakeRange(0, s.length);
+    
+    NSMutableArray *textAttributes = [NSMutableArray array];
+    NSInteger index = 0;
+    [self.nodeModel.nodes removeAllObjects];
+    while (index < s.length) {
+        NSDictionary *attribute = [s attributesAtIndex:index effectiveRange:&all];
+        [textAttributes addObject:[s attributesAtIndex:index effectiveRange:&all]];
+        UIFont *current = [attribute objectForKey:@"NSFont"];
+        UIFontDescriptor *fontDescriptor = current.fontDescriptor;
+        UIFontDescriptorSymbolicTraits fontDescriptorSymbolicTraits = fontDescriptor.symbolicTraits;
+        BOOL isBold = (fontDescriptorSymbolicTraits & UIFontDescriptorTraitBold) != 0;
+        BOOL isItalic = (fontDescriptorSymbolicTraits & UIFontDescriptorTraitItalic) != 0 || [[attribute objectForKey:@"NSObliqueness"] floatValue] != 0;
+        NSString *text = [s.string substringWithRange:all];
+        
+        TextModel *model = [[TextModel alloc] init];
+        model.text = text;
+        model.kind = @"range";
+        if (isBold) {
+            [model.marks addObject:@{}];
+        }if (isItalic) {
+            [model.marks addObject:@{}];
+        }
+        
+        [self.nodeModel.nodes addObject:model];
+        index += all.length;
+    }
+}
 
 
 /*

@@ -16,7 +16,23 @@
 
 @end
 
+@class MyPicView;
+
+@protocol MyPicViewDelegate <NSObject>
+
+- (void)didTapView:(MyPicView *)view;
+- (void)deletePicture:(MyPicView *)view;
+- (void)notePicture:(MyPicView *)view;
+
+
+@end
+
 @interface MyPicView : UIView
 @property (nonatomic, weak) id<MyTextViewDelegate>delegateF;
+@property (nonatomic, assign) BOOL isSelected;
+
+@property (nonatomic, weak) id<MyPicViewDelegate> delegate;
+- (void)setContentImage:(UIImage *)image;
+- (void)didTapView;
 
 @end

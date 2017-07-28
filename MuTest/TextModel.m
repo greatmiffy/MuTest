@@ -10,7 +10,13 @@
 
 @implementation TextModel
 
-
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.marks = [NSMutableArray array];
+    }
+    return self;
+}
 
 
 
