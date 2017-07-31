@@ -198,10 +198,10 @@
 		45D293911F1753C300298495 /* MuTest */ = {
 			isa = PBXGroup;
 			children = (
+				45D293AD1F1756F800298495 /* Masonry */,
 				454175DD1F29F8A300E56F0A /* TZImagePickerController */,
 				45D293D11F17571200298495 /* UIView+MUViewAddition.h */,
 				45D293D21F17571200298495 /* UIView+MUViewAddition.m */,
-				45D293AD1F1756F800298495 /* Masonry */,
 				45D293951F1753C300298495 /* AppDelegate.h */,
 				45D293961F1753C300298495 /* AppDelegate.m */,
 				45D293981F1753C300298495 /* ViewController.h */,

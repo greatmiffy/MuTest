@@ -104,10 +104,70 @@ static CGFloat itemMargin = 5;
 
 - (void)callAlbumView:(id)sender
 {
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
     NSLog(@"%@",self.navigationController);
     NSLog(@"%@",self.navigationController.childViewControllers);
     TZAlbumPickerController *controller =self.navigationController.childViewControllers[0];
+    controller.ablumPickBlock = ^(TZAlbumModel *model) {
+        [self reloadAlbumModel:model];
+        [self removeBackgroundView];
+    };
+    controller.view.frame = CGRectMake(0,  - 64 - ScreenWidth, ScreenWidth, ScreenWidth);
+    [tzImagePickerVc.view insertSubview:controller.view aboveSubview:self.view];
+    [self creatBackViewBelow:controller.view];
+    [UIView animateWithDuration:0.25f animations:^{
+        controller.view.frame = CGRectMake(0,  64, ScreenWidth, ScreenWidth);
+    }];
+}
+
+- (void)reloadAlbumModel:(TZAlbumModel *)model
+{
+    self.model = model;
+    [self fetchAssetModels];
+}
+
+- (void)creatBackViewBelow:(UIView *)subView
+{
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    if ([tzImagePickerVc.view viewWithTag:3333] != nil) {
+        return;
+    }
+    UIView *backView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
+    backView.tag = 3333;
+    backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
+    [self.view insertSubview:backView belowSubview:subView];
     
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeBackgroundView)];
+    [backView addGestureRecognizer:tap];
+    
+    [UIView animateWithDuration:0.25f animations:^{
+        backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.38];
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
+- (void)removeBackView:(UIView *)superview
+{
+    UIView *backView = [superview viewWithTag:3333];
+    [UIView animateWithDuration:0.25f animations:^{
+        backView.backgroundColor = [UIColor clearColor];
+    } completion:^(BOOL finished) {
+        [backView removeFromSuperview];
+    }];
+}
+- (void)removeBackgroundView
+{
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    [self removeBackView:tzImagePickerVc.view];
+    TZAlbumPickerController *controller =self.navigationController.childViewControllers[0];
+    [self creatBackViewBelow:controller.view];
+    [UIView animateWithDuration:0.25f animations:^{
+        controller.view.frame = CGRectMake(0,  - 64 - ScreenWidth, ScreenWidth, ScreenWidth);
+    } completion:^(BOOL finished) {
+        [controller.view removeFromSuperview];
+    }];
+
 }
 
 - (void)fetchAssetModels {
@@ -131,6 +191,32 @@ static CGFloat itemMargin = 5;
             } else {
                 _models = [NSMutableArray arrayWithArray:_model.models];
                 [self initSubviews];
+            }
+        }
+    });
+}
+
+- (void)reloadAssetModels {
+    TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    if (_isFirstAppear) {
+        [tzImagePickerVc showProgressHUD];
+    }
+    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        if (!tzImagePickerVc.sortAscendingByModificationDate && _isFirstAppear && iOS8Later) {
+            [[TZImageManager manager] getCameraRollAlbum:tzImagePickerVc.allowPickingVideo allowPickingImage:tzImagePickerVc.allowPickingImage completion:^(TZAlbumModel *model) {
+                _model = model;
+                _models = [NSMutableArray arrayWithArray:_model.models];
+                [self.collectionView reloadData];
+            }];
+        } else {
+            if (_showTakePhotoBtn || !iOS8Later || _isFirstAppear) {
+                [[TZImageManager manager] getAssetsFromFetchResult:_model.result allowPickingVideo:tzImagePickerVc.allowPickingVideo allowPickingImage:tzImagePickerVc.allowPickingImage completion:^(NSArray<TZAssetModel *> *models) {
+                    _models = [NSMutableArray arrayWithArray:models];
+                    [self.collectionView reloadData];
+                }];
+            } else {
+                _models = [NSMutableArray arrayWithArray:_model.models];
+                [self.collectionView reloadData];
             }
         }
     });
@@ -234,12 +320,6 @@ static CGFloat itemMargin = 5;
     _imageScroll = [[UIScrollView alloc] init];
     _imageScroll.showsVerticalScrollIndicator = NO;
     _imageScroll.showsHorizontalScrollIndicator = NO;
-    
-    
-    
-    
-    
-    
     
     
     _previewButton = [UIButton buttonWithType:UIButtonTypeCustom];

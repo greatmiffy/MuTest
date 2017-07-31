@@ -217,8 +217,10 @@
 - (BOOL)isAssetCanSelect:(id)asset;
 @end
 
-
+typedef void(^AlbumPickBlock)(TZAlbumModel *model);
 @interface TZAlbumPickerController : UIViewController
+
+@property (nonatomic, copy) AlbumPickBlock ablumPickBlock;
 @property (nonatomic, assign) NSInteger columnNumber;
 - (void)configTableView;
 @end

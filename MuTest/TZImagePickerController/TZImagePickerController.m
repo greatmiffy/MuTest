@@ -620,6 +620,7 @@
                     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
                     _tableView.rowHeight = 70;
                     _tableView.tableFooterView = [[UIView alloc] init];
+                    
                     _tableView.dataSource = self;
                     _tableView.delegate = self;
                     [_tableView registerClass:[TZAlbumCell class] forCellReuseIdentifier:@"TZAlbumCell"];
@@ -652,7 +653,7 @@
     } else {
         tableViewHeight = self.view.tz_height;
     }
-    _tableView.frame = CGRectMake(0, top, self.view.tz_width, tableViewHeight);
+    _tableView.frame = CGRectMake(0, 0, self.view.tz_width, self.view.height);
 }
 
 #pragma mark - UITableViewDataSource && Delegate
@@ -671,11 +672,12 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    TZPhotoPickerController *photoPickerVc = [[TZPhotoPickerController alloc] init];
-    photoPickerVc.columnNumber = self.columnNumber;
+//    TZPhotoPickerController *photoPickerVc = [[TZPhotoPickerController alloc] init];
+//    photoPickerVc.columnNumber = self.columnNumber;
     TZAlbumModel *model = _albumArr[indexPath.row];
-    photoPickerVc.model = model;
-    [self.navigationController pushViewController:photoPickerVc animated:YES];
+//    photoPickerVc.model = model;
+//    [self.navigationController pushViewController:photoPickerVc animated:YES];
+    self.ablumPickBlock(model);
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
