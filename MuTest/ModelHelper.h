@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 #import "MyTextView.h"
 @interface ModelHelper : NSObject
-
+@property (assign) BOOL isBool;
 @end

@@ -15,8 +15,6 @@
 {
     NodeModel *model = [[NodeModel alloc] init];
     
-    
-    
     return model;
 }
 

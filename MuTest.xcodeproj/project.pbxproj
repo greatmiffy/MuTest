@@ -10,6 +10,11 @@
 		453D74741F283E3F00B0A715 /* SelectedBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D74731F283E3F00B0A715 /* SelectedBar.m */; };
 		453D74771F285C0F00B0A715 /* TextModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D74761F285C0F00B0A715 /* TextModel.m */; };
 		453D747A1F28607300B0A715 /* NodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 453D74791F28607300B0A715 /* NodeModel.m */; };
+		4540B6D91F30287900638165 /* LHPerformanceConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 4540B6CF1F30287900638165 /* LHPerformanceConfig.m */; };
+		4540B6DA1F30287900638165 /* LHPerformanceLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4540B6D11F30287900638165 /* LHPerformanceLabel.m */; };
+		4540B6DB1F30287900638165 /* LHPerformanceMonitorService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4540B6D31F30287900638165 /* LHPerformanceMonitorService.m */; };
+		4540B6DC1F30287900638165 /* LHPerformanceStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 4540B6D51F30287900638165 /* LHPerformanceStatusBar.m */; };
+		4540B6DD1F30287900638165 /* LHPerformanceUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 4540B6D81F30287900638165 /* LHPerformanceUtil.m */; };
 		454175811F2988F300E56F0A /* ModelHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 454175801F2988F300E56F0A /* ModelHelper.m */; };
 		454175FB1F29F8A300E56F0A /* NSBundle+TZImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 454175DF1F29F8A300E56F0A /* NSBundle+TZImagePicker.m */; };
 		454175FC1F29F8A300E56F0A /* TZAssetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 454175E11F29F8A300E56F0A /* TZAssetCell.m */; };
@@ -55,6 +60,17 @@
 		453D74761F285C0F00B0A715 /* TextModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextModel.m; sourceTree = "<group>"; };
 		453D74781F28607300B0A715 /* NodeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeModel.h; sourceTree = "<group>"; };
 		453D74791F28607300B0A715 /* NodeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeModel.m; sourceTree = "<group>"; };
+		4540B6CE1F30287900638165 /* LHPerformanceConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHPerformanceConfig.h; sourceTree = "<group>"; };
+		4540B6CF1F30287900638165 /* LHPerformanceConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHPerformanceConfig.m; sourceTree = "<group>"; };
+		4540B6D01F30287900638165 /* LHPerformanceLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHPerformanceLabel.h; sourceTree = "<group>"; };
+		4540B6D11F30287900638165 /* LHPerformanceLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHPerformanceLabel.m; sourceTree = "<group>"; };
+		4540B6D21F30287900638165 /* LHPerformanceMonitorService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHPerformanceMonitorService.h; sourceTree = "<group>"; };
+		4540B6D31F30287900638165 /* LHPerformanceMonitorService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHPerformanceMonitorService.m; sourceTree = "<group>"; };
+		4540B6D41F30287900638165 /* LHPerformanceStatusBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHPerformanceStatusBar.h; sourceTree = "<group>"; };
+		4540B6D51F30287900638165 /* LHPerformanceStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHPerformanceStatusBar.m; sourceTree = "<group>"; };
+		4540B6D61F30287900638165 /* LHPerformanceTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHPerformanceTypes.h; sourceTree = "<group>"; };
+		4540B6D71F30287900638165 /* LHPerformanceUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LHPerformanceUtil.h; sourceTree = "<group>"; };
+		4540B6D81F30287900638165 /* LHPerformanceUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LHPerformanceUtil.m; sourceTree = "<group>"; };
 		4541757F1F2988F300E56F0A /* ModelHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelHelper.h; sourceTree = "<group>"; };
 		454175801F2988F300E56F0A /* ModelHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelHelper.m; sourceTree = "<group>"; };
 		454175DE1F29F8A300E56F0A /* NSBundle+TZImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+TZImagePicker.h"; sourceTree = "<group>"; };
@@ -143,6 +159,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4540B6CD1F30287900638165 /* LHPerformanceStatusBar Class */ = {
+			isa = PBXGroup;
+			children = (
+				4540B6CE1F30287900638165 /* LHPerformanceConfig.h */,
+				4540B6CF1F30287900638165 /* LHPerformanceConfig.m */,
+				4540B6D01F30287900638165 /* LHPerformanceLabel.h */,
+				4540B6D11F30287900638165 /* LHPerformanceLabel.m */,
+				4540B6D21F30287900638165 /* LHPerformanceMonitorService.h */,
+				4540B6D31F30287900638165 /* LHPerformanceMonitorService.m */,
+				4540B6D41F30287900638165 /* LHPerformanceStatusBar.h */,
+				4540B6D51F30287900638165 /* LHPerformanceStatusBar.m */,
+				4540B6D61F30287900638165 /* LHPerformanceTypes.h */,
+				4540B6D71F30287900638165 /* LHPerformanceUtil.h */,
+				4540B6D81F30287900638165 /* LHPerformanceUtil.m */,
+			);
+			path = "LHPerformanceStatusBar Class";
+			sourceTree = "<group>";
+		};
 		454175DD1F29F8A300E56F0A /* TZImagePickerController */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,6 +232,7 @@
 		45D293911F1753C300298495 /* MuTest */ = {
 			isa = PBXGroup;
 			children = (
+				4540B6CD1F30287900638165 /* LHPerformanceStatusBar Class */,
 				45D293AD1F1756F800298495 /* Masonry */,
 				454175DD1F29F8A300E56F0A /* TZImagePickerController */,
 				45D293D11F17571200298495 /* UIView+MUViewAddition.h */,
@@ -353,12 +388,15 @@
 				45D2939A1F1753C300298495 /* ViewController.m in Sources */,
 				45D293AC1F17561B00298495 /* MyTextView.m in Sources */,
 				454176031F29F8A300E56F0A /* TZLocationManager.m in Sources */,
+				4540B6DC1F30287900638165 /* LHPerformanceStatusBar.m in Sources */,
 				45D293C81F1756F800298495 /* MASConstraint.m in Sources */,
 				45D293D01F1756F900298495 /* ViewController+MASAdditions.m in Sources */,
+				4540B6D91F30287900638165 /* LHPerformanceConfig.m in Sources */,
 				45D293CA1F1756F800298495 /* MASLayoutConstraint.m in Sources */,
 				45D293D31F17571200298495 /* UIView+MUViewAddition.m in Sources */,
 				45D293CD1F1756F900298495 /* NSArray+MASAdditions.m in Sources */,
 				453D747A1F28607300B0A715 /* NodeModel.m in Sources */,
+				4540B6DB1F30287900638165 /* LHPerformanceMonitorService.m in Sources */,
 				45D293CC1F1756F900298495 /* MASViewConstraint.m in Sources */,
 				454176001F29F8A300E56F0A /* TZImageManager.m in Sources */,
 				454176091F29F8A300E56F0A /* UIView+Layout.m in Sources */,
@@ -366,9 +404,11 @@
 				45D293CB1F1756F800298495 /* MASViewAttribute.m in Sources */,
 				454176061F29F8A300E56F0A /* TZPhotoPreviewController.m in Sources */,
 				455C92DA1F272774002EEECF /* MyPicView.m in Sources */,
+				4540B6DD1F30287900638165 /* LHPerformanceUtil.m in Sources */,
 				45D293CF1F1756F900298495 /* View+MASAdditions.m in Sources */,
 				454175FB1F29F8A300E56F0A /* NSBundle+TZImagePicker.m in Sources */,
 				45D293971F1753C300298495 /* AppDelegate.m in Sources */,
+				4540B6DA1F30287900638165 /* LHPerformanceLabel.m in Sources */,
 				454175811F2988F300E56F0A /* ModelHelper.m in Sources */,
 				454175FC1F29F8A300E56F0A /* TZAssetCell.m in Sources */,
 				454176071F29F8A300E56F0A /* TZProgressView.m in Sources */,

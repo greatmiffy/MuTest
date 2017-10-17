@@ -15,6 +15,8 @@
 
 @property (nonatomic, strong) NSAttributedString *strings;
 
+@property (nonatomic, strong) NSMutableArray *itemArray;
+
 @end
 
 @implementation MyTextView
@@ -66,6 +68,13 @@
         make.leading.equalTo(self);
         make.width.mas_equalTo(8);
     }];
+    
+    if (self.listState == TextViewListStateOrder) {
+        for (int i = 0; i < _itemArray.count; i++) {
+            MyTextView *temp = _itemArray[i];
+            temp.y = i * temp.height;
+        }
+    }
 
 }
 
@@ -97,6 +106,7 @@
             make.leading.equalTo(self);
             make.width.mas_equalTo(8);
         }];
+        
 
         // 长按手势
         UILongPressGestureRecognizer *longGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(viewLongPressGesture:)];
@@ -107,36 +117,36 @@
 
 - (void)drawRect:(CGRect)rect
 {
-    CAShapeLayer *border = [CAShapeLayer layer];
-    border.strokeColor = [UIColor grayColor].CGColor;
-    border.fillColor = nil;
-    border.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
-    border.frame = self.bounds;
-    border.lineWidth = 2.f;
-    border.lineCap = @"square";
-    border.lineDashPattern = @[@8, @8];
-
-//    for (CAShapeLayer *layer in self.layer.sublayers) {
-//        if ([layer respondsToSelector:@selector(lineCap)] && [layer.lineCap isEqualToString:@"square"]) {
+//    CAShapeLayer *border = [CAShapeLayer layer];
+//    border.strokeColor = [UIColor grayColor].CGColor;
+//    border.fillColor = nil;
+//    border.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+//    border.frame = self.bounds;
+//    border.lineWidth = 2.f;
+//    border.lineCap = @"square";
+//    border.lineDashPattern = @[@8, @8];
+//
+////    for (CAShapeLayer *layer in self.layer.sublayers) {
+////        if ([layer respondsToSelector:@selector(lineCap)] && [layer.lineCap isEqualToString:@"square"]) {
+////            [layer removeFromSuperlayer];
+////        }
+////    }
+//    
+//    // 该方法会多次调用, 所以在添加前移除原有的layer
+//    NSMutableArray * arrayTemp = [self.layer.sublayers mutableCopy];
+//    NSArray * array = [NSArray arrayWithArray: arrayTemp];
+//    
+//    for (CAShapeLayer *layer in array) {
+//        if ([layer respondsToSelector:@selector(lineCap)] && [layer.lineCap isEqualToString:@"square"]){
 //            [layer removeFromSuperlayer];
 //        }
 //    }
-    
-    // 该方法会多次调用, 所以在添加前移除原有的layer
-    NSMutableArray * arrayTemp = [self.layer.sublayers mutableCopy];
-    NSArray * array = [NSArray arrayWithArray: arrayTemp];
-    
-    for (CAShapeLayer *layer in array) {
-        if ([layer respondsToSelector:@selector(lineCap)] && [layer.lineCap isEqualToString:@"square"]){
-            [layer removeFromSuperlayer];
-        }
-    }
-
-    NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
-    // 在非响应且有文字时, 不添加虚线边框
-    if (!s.length || [self isFirstResponder]) {
-        [self.layer addSublayer:border];
-    }
+//
+//    NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
+//    // 在非响应且有文字时, 不添加虚线边框
+//    if (!s.length || [self isFirstResponder]) {
+//        [self.layer addSublayer:border];
+//    }
     
 }
 
@@ -183,18 +193,18 @@
     if (![self isFirstResponder]) {
         if ([gestureRecognizer isKindOfClass:NSClassFromString(@"UITextTapRecognizer")]) {
             // 移除虚线边框(条件是输入了内容之后)
-            NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
-            if (s.length) {
-                        CAShapeLayer *border = [CAShapeLayer layer];
-                        border.strokeColor = [UIColor grayColor].CGColor;
-                        border.fillColor = nil;
-                        border.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
-                        border.frame = self.bounds;
-                        border.lineWidth = 2.f;
-                        border.lineCap = @"square";
-                        border.lineDashPattern = @[@8, @8];
-                        [self.layer addSublayer:border];
-            }
+//            NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
+//            if (s.length) {
+//                        CAShapeLayer *border = [CAShapeLayer layer];
+//                        border.strokeColor = [UIColor grayColor].CGColor;
+//                        border.fillColor = nil;
+//                        border.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+//                        border.frame = self.bounds;
+//                        border.lineWidth = 2.f;
+//                        border.lineCap = @"square";
+//                        border.lineDashPattern = @[@8, @8];
+//                        [self.layer addSublayer:border];
+//            }
         }
         if ([gestureRecognizer isKindOfClass:NSClassFromString(@"UITextTapRecognizer")] || [gestureRecognizer isKindOfClass:NSClassFromString(@"UILongPressGestureRecognizer")]) {
             return YES;
@@ -217,17 +227,17 @@
     [self addGestureRecognizer:longGesture];
 
     //
-    NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
-    if (s.length) {
-        // 在编辑完成后,去掉虚线边框
-        NSMutableArray * arrayTemp = [self.layer.sublayers mutableCopy];
-        NSArray * array = [NSArray arrayWithArray: arrayTemp];
-        for (CAShapeLayer *layer in array) {
-            if ([layer respondsToSelector:@selector(lineCap)] && [layer.lineCap isEqualToString:@"square"]){
-                [layer removeFromSuperlayer];
-            }
-        }
-    }
+//    NSAttributedString *s = self.attributedText ? self.attributedText : [[NSAttributedString alloc] initWithString:self.text];
+//    if (s.length) {
+//        // 在编辑完成后,去掉虚线边框
+//        NSMutableArray * arrayTemp = [self.layer.sublayers mutableCopy];
+//        NSArray * array = [NSArray arrayWithArray: arrayTemp];
+//        for (CAShapeLayer *layer in array) {
+//            if ([layer respondsToSelector:@selector(lineCap)] && [layer.lineCap isEqualToString:@"square"]){
+//                [layer removeFromSuperlayer];
+//            }
+//        }
+//    }
     return [super resignFirstResponder];
 }
 
@@ -236,10 +246,21 @@
     return [super becomeFirstResponder];
 }
 
-
 - (void)list
 {
-
+//    MyTextView *listItem = [[MyTextView alloc] initWithFrame:CGRectMake(10, 5, self.width - 20, self.height - 10)];
+//    listItem.listState = TextViewListStateOrder;
+//    [self addSubview:listItem];
+//    
+//    [_itemArray addObject:listItem];
+    
+    
+    
+    
+    
+    
+    
+    return;
     NSMutableAttributedString *s = self.attributedText ? [self.attributedText mutableCopy] : [[[NSAttributedString alloc] initWithString:self.text] mutableCopy];
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineBreakMode = NSLineBreakByCharWrapping;
@@ -479,7 +500,6 @@
         }if (isItalic) {
             [model.marks addObject:@{}];
         }
-        
         [self.nodeModel.nodes addObject:model];
         index += all.length;
     }

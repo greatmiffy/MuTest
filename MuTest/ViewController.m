@@ -15,6 +15,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "MyPicView.h"
 #import "TZImagePickerController.h"
+#import "LHPerformanceMonitorService.h"
 
 
 @interface ViewController ()<UITextViewDelegate, MyTextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, TZImagePickerControllerDelegate, MyPicViewDelegate>
@@ -84,6 +85,12 @@
     _currentView = self.contentTextView;
     
     
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [LHPerformanceMonitorService run];
 }
 
 - (void)changeToBottomBar
@@ -162,6 +169,7 @@ CGFloat currentLength;
 - (void)textViewDidChange:(UITextView *)textView
 {
     // 输入回车后插入一个列表头
+    MyTextView *tv = (MyTextView *)textView;
     if (lastRange.length != 0 || lastRange.location != 0) {
         [(MyTextView *)textView insertParagraphHeader:lastRange];
         lastRange = NSMakeRange(0, 0);
@@ -172,8 +180,11 @@ CGFloat currentLength;
     NSAttributedString *s = textView.attributedText ? textView.attributedText : [[NSAttributedString alloc] initWithString:textView.text];
     // 这里减去的8, 是textView的文字内边距
     CGRect rect = [s boundingRectWithSize:CGSizeMake(ScreenWidth - 40 - fixW - 8, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin| NSStringDrawingUsesFontLeading context:nil];
+    // 这里要向上取整调整高度
     textView.height = ceilf( rect.size.height + fixH) > 40 ? ceilf( rect.size.height + fixH) : 40;
-    
+    if (tv.listState != TextViewListStateNormal) {
+        tv.rangeArray = [tv getRangeStr:s.string findText:@"\n"];
+    }
     [self layoutTextView];
     
     [textView setNeedsDisplay];
@@ -191,10 +202,13 @@ CGFloat currentLength;
             NSRange temp = [v rangeValue];
             if (NSLocationInRange(range.location, temp)) {
                 NSMutableAttributedString *s =[textView.attributedText mutableCopy];
-                [s deleteCharactersInRange:NSMakeRange(temp.location, temp.length)];
+                if (![v isEqual:[[(MyTextView *)textView rangeArray] firstObject]]) {
+                    [s deleteCharactersInRange:NSMakeRange(temp.location - 1, temp.length)];
+                }else
+                    [s deleteCharactersInRange:NSMakeRange(temp.location, temp.length)];
                 textView.attributedText = s;
                 // range.location - 4 + 1,因为删除键要删除一个
-                textView.selectedRange = NSMakeRange(range.location - 4, 0);
+                textView.selectedRange = NSMakeRange(range.location - 4, 1);
                 [(MyTextView *)textView removeRangeFromArray:v];
                 return YES;
             }
@@ -216,21 +230,17 @@ CGFloat currentLength;
             [(MyTextView *)textView deleteLastParagraph];
             [self caculateTextHeight:textView];
             [self addTextView:(MyTextView *)textView];
-            
             return NO;
         }
 //        if ([text isEqualToString:@"\n"] && [lastStr isEqualToString:@"\n"]) {
-//            
 //            [(MyTextView *)textView deleteLastParagraph];
 ////            [self caculateTextHeight:textView];
 //            [self addTextView:(MyTextView *)textView];
-//            
 //            return NO;
 //        }
         // 在段中
         if ([text isEqualToString:@"\n"]){
 //            [(MyTextView *)textView insertParagraphHeader:range];
-            
             lastRange = range;
             return YES;
         }
@@ -273,7 +283,6 @@ CGFloat currentLength;
 
 - (void)addImageViewWithImage:(UIImage *)image
 {
-    
     CGFloat height = image.size.height * (ScreenWidth - 40) / image.size.width;
     
     MyPicView *picView = [[MyPicView alloc] initWithFrame:CGRectMake(20, 0, ScreenWidth - 40, height)];
@@ -284,7 +293,6 @@ CGFloat currentLength;
     picView.tag = _currentView.tag + 1;
     [_objList insertObject:picView atIndex:_currentView.tag - 99];
     [self layoutTextView];
-
 }
 
 - (void)removeTextView:(MyTextView *)textView
@@ -384,7 +392,6 @@ CGFloat currentLength;
         [self layoutTextView];
     }];
     _rects = CGPointZero;
-    
 }
 
 

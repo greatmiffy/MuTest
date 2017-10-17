@@ -45,5 +45,6 @@ typedef NS_ENUM (NSInteger,TextViewListState){
 
 - (void)boldWithSelectedRange:(NSRange)range;
 - (void)italicWithSelectedRange:(NSRange)range;
+- (NSMutableArray *)getRangeStr:(NSString *)text findText:(NSString *)findText;
 
 @end

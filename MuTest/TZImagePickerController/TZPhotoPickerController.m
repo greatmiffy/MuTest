@@ -16,6 +16,7 @@
 #import "TZVideoPlayerController.h"
 #import "TZGifPhotoPreviewController.h"
 #import "TZLocationManager.h"
+#import "LHPerformanceMonitorService.h"
 
 @interface TZPhotoPickerController ()<UICollectionViewDataSource,UICollectionViewDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UIAlertViewDelegate> {
     NSMutableArray *_models;
@@ -73,6 +74,7 @@ static CGFloat itemMargin = 5;
     }
     return _imagePickerVc;
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -83,7 +85,7 @@ static CGFloat itemMargin = 5;
     self.navigationItem.title = _model.name;
     [self createTitleBtn];
     self.selectedPhotos = [NSMutableArray array];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:tzImagePickerVc.cancelBtnTitleStr style:UIBarButtonItemStylePlain target:tzImagePickerVc action:@selector(cancelButtonClick)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:tzImagePickerVc.cancelBtnTitleStr style:UIBarButtonItemStylePlain target:tzImagePickerVc action:@selector(cancelButtonClick)];
     _showTakePhotoBtn = (([[TZImageManager manager] isCameraRollAlbum:_model.name]) && tzImagePickerVc.allowTakePicture);
     // [self resetCachedAssets];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeStatusBarOrientationNotification:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
@@ -112,18 +114,25 @@ static CGFloat itemMargin = 5;
         [self reloadAlbumModel:model];
         [self removeBackgroundView];
     };
-    controller.view.frame = CGRectMake(0,  - 64 - ScreenWidth, ScreenWidth, ScreenWidth);
-    [tzImagePickerVc.view insertSubview:controller.view aboveSubview:self.view];
-    [self creatBackViewBelow:controller.view];
-    [UIView animateWithDuration:0.25f animations:^{
-        controller.view.frame = CGRectMake(0,  64, ScreenWidth, ScreenWidth);
-    }];
+    if (controller.view.y != 64) {
+        controller.view.frame = CGRectMake(0,  - 64 - ScreenWidth, ScreenWidth, ScreenWidth);
+        [tzImagePickerVc.view insertSubview:controller.view aboveSubview:self.view];
+        [self creatBackViewBelow:controller.view];
+        [UIView animateWithDuration:0.25f animations:^{
+            controller.view.frame = CGRectMake(0,  64, ScreenWidth, ScreenWidth);
+        }];
+    }else
+    {
+        [self removeBackgroundView];
+    }
+    
 }
 
 - (void)reloadAlbumModel:(TZAlbumModel *)model
 {
+    [_titleBtn setTitle:model.name forState:UIControlStateNormal];
     self.model = model;
-    [self fetchAssetModels];
+    [self reloadAssetModels];
 }
 
 - (void)creatBackViewBelow:(UIView *)subView
@@ -202,23 +211,22 @@ static CGFloat itemMargin = 5;
         [tzImagePickerVc showProgressHUD];
     }
     dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        if (!tzImagePickerVc.sortAscendingByModificationDate && _isFirstAppear && iOS8Later) {
-            [[TZImageManager manager] getCameraRollAlbum:tzImagePickerVc.allowPickingVideo allowPickingImage:tzImagePickerVc.allowPickingImage completion:^(TZAlbumModel *model) {
-                _model = model;
-                _models = [NSMutableArray arrayWithArray:_model.models];
+        if (_showTakePhotoBtn || !iOS8Later || _isFirstAppear) {
+            [[TZImageManager manager] getAssetsFromFetchResult:_model.result allowPickingVideo:tzImagePickerVc.allowPickingVideo allowPickingImage:tzImagePickerVc.allowPickingImage completion:^(NSArray<TZAssetModel *> *models) {
+                _models = [NSMutableArray arrayWithArray:models];
+                [self checkSelectedModels];
+                [self scrollCollectionViewToBottom];
                 [self.collectionView reloadData];
+                [tzImagePickerVc hideProgressHUD];
             }];
         } else {
-            if (_showTakePhotoBtn || !iOS8Later || _isFirstAppear) {
-                [[TZImageManager manager] getAssetsFromFetchResult:_model.result allowPickingVideo:tzImagePickerVc.allowPickingVideo allowPickingImage:tzImagePickerVc.allowPickingImage completion:^(NSArray<TZAssetModel *> *models) {
-                    _models = [NSMutableArray arrayWithArray:models];
-                    [self.collectionView reloadData];
-                }];
-            } else {
-                _models = [NSMutableArray arrayWithArray:_model.models];
-                [self.collectionView reloadData];
-            }
+            _models = [NSMutableArray arrayWithArray:_model.models];
+            [self checkSelectedModels];
+            [self scrollCollectionViewToBottom];
+            [self.collectionView reloadData];
+            [tzImagePickerVc hideProgressHUD];
         }
+        
     });
 }
 
