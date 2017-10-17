@@ -58,6 +58,7 @@
             [self image];
         }
     }];
+    @"master";
     [self.view addSubview:_bottomBar];
     
     self.selectedBar = [[SelectedBar alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, 30) callBack:^(NSInteger index, NSInteger state) {
