@@ -63,6 +63,7 @@
 
 - (void)link:(UIButton *)btn
 {
+    @"master";
     self.selectBarBlock(2, btn.selected);
 }
 

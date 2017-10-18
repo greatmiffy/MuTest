@@ -8,7 +8,6 @@
 
 #import "MyTextView.h"
 #import <objc/runtime.h>
-#import <objc/objc-runtime.h>
 #import <CoreText/CoreText.h>
 
 @interface MyTextView ()
@@ -54,6 +53,7 @@
         }];
         UILongPressGestureRecognizer *longGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(viewLongPressGesture:)];
         [self addGestureRecognizer:longGesture];
+        @"master";
         
     }
     return self;
