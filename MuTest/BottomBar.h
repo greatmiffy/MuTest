@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#define newMap @"newMap"
 typedef  void(^BottomBarBlock)(NSInteger index, NSInteger state);
 
 @interface BottomBar : UIView
 
 - (instancetype)initWithFrame:(CGRect)frame block:(BottomBarBlock)bottomBlock;
+
 
 @end

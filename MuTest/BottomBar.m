@@ -61,6 +61,7 @@
                                                    object:nil];
         
         self.bottomBlock = bottomBlock;
+        @"newMap";
         
     }
     return self;
